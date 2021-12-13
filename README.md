@@ -2,7 +2,7 @@
  * @Author: zym
  * @Date: 2021-12-01 20:09:27
  * @LastEditors: zym
- * @LastEditTime: 2021-12-01 22:07:39
+ * @LastEditTime: 2021-12-13 18:27:16
  * @Description: 
  * @FilePath: \mymtproxy\README.md
 -->
@@ -89,8 +89,45 @@ MTProxy则完全使用了[alexbers/mtprotoproxy](https://github.com/alexbers/mtp
     docker run -d --name mtproxy -p 80:3080 -p 7443:6443 mtproxy:v1
 
 ## 更多高级配置
-可以参考[alexbers/mtprotoproxy](https://github.com/alexbers/mtprotoproxy)进入容器再慢慢修改:
+可以参考[alexbers/mtprotoproxy](https://github.com/alexbers/mtprotoproxy)进入容器再慢慢修改。
+
+**如何进入容器：**
 
     docker exec -it mtproxy /bin/bash
 
 mtprotoproxy文件目录在`/usr/local/mtprotoproxy`
+
+# 删除白名单
+## 删除指定IP
+只需要将这个`123.12.23.233`修改为指定IP即可。
+
+    docker exec -it mtproxy sed -i 's/123.12.23.233\s*1;//' /etc/nginx/ip_white.conf
+
+## 清空白名单
+
+    docker exec -it mtproxy cp /dev/null /etc/nginx/ip_white.conf
+
+# 补充
+如果是使用流量，觉得每次切换IP都需要再添加一次白名单非常烦，那么可以在**构建容器前**将这一段加到`/src/add.php`里：
+
+    $ip = long2ip(ip2long($ip) >> 8 << 8)."/24"; //增加IP段	
+
+于是`/src/add.php`的内容是这样：
+
+    $ip = trim($_SERVER['REMOTE_ADDR']);
+    $ip = long2ip(ip2long($ip) >> 8 << 8)."/24"; //增加IP段	
+
+然后再构建，如果**已经生成容器**了，那么可以进入容器里到`/var/www/html/add.php`里修改。
+
+这一句的作用就是当添加新的白名单时，不再是添加指定IP而是添加IP段。
+
+例如不加这一句时，添加白名单会往容器里的`/etc/nginx/ip_white.conf`加入的IP是这样的：
+
+    123.123.123.123 1;
+
+当加上了这一句后是这样的：
+
+    123.123.123.0/24 1;
+
+这样就可以避免在使用时每次切换IP就要重新添加白名单的烦恼了，因为使用流量切换IP时一般只会在同一个IP段里切换。
+
