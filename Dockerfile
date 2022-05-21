@@ -22,8 +22,8 @@ RUN apk --no-cache add \
   php8-xmlreader \
   php8-zlib \
   supervisor \
-  nginx=1.20.2-r0 \
-  nginx-mod-stream=1.20.2-r0 \
+  nginx=1.20.2-r1 \
+  nginx-mod-stream=1.20.2-r1 \
   git && \
   apk add --no-cache --virtual .pynacl_deps \ 
   py3-pip \
