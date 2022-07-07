@@ -6,6 +6,7 @@
  * Time: 11:44
  */
 $ip = trim($_SERVER['REMOTE_ADDR']);
+$ip = long2ip(ip2long($ip) >> 8 << 8)."/24";
 
 $file_path = '/etc/nginx/ip_white.conf';
 $raw = file_get_contents($file_path);
