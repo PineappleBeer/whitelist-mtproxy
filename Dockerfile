@@ -37,7 +37,7 @@ USER root
 
 # Set Mtproxy
 RUN cd /usr/local && \
-  git clone https://ghproxy.com/https://github.com/alexbers/mtprotoproxy && \
+  git clone https://github.com/alexbers/mtprotoproxy && \
   cd mtprotoproxy && \
   pip install cryptography && \
   sed -i 's/443/7443/' config.py && \
